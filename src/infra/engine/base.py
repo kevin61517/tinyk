@@ -6,8 +6,8 @@ from src.domain.engine import EngineInterface, Generic, BrowserT, PageT
 class BaseEngine(EngineInterface, Generic[BrowserT, PageT]):
     """
     爬蟲引擎
-     - 瀏覽器
-     - 頁面
+     - 瀏覽器管理
+     - 頁面管理
     """
     def __init__(self):
         self._browser: Optional[BrowserT] = None
