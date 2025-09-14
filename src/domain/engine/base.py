@@ -1,7 +1,14 @@
 import abc
+from typing import TypeVar, Generic
 
 
-class EngineInterface:
+# 泛型型別
+BrowserT = TypeVar('BrowserT')  # 瀏覽器
+PageT = TypeVar('PageT')  # 頁面
+
+
+class EngineInterface(abc.ABC):
+
     """爬蟲引擎介面"""
     @abc.abstractmethod
     async def __aenter__(self):

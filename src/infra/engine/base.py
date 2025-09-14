@@ -1,16 +1,16 @@
 import abc
-from src.domain.engine import EngineInterface
+from typing import Optional
+from src.domain.engine import EngineInterface, Generic, BrowserT, PageT
 
 
-class Engine(EngineInterface):
+class BaseEngine(EngineInterface, Generic[BrowserT, PageT]):
     """
     爬蟲引擎
      - 瀏覽器
      - 頁面
     """
     def __init__(self):
-        self._browser = None
-        self._page = None
+        self._browser: Optional[BrowserT] = None
 
     async def __aenter__(self):
         """開啟異步上下文"""
@@ -33,6 +33,10 @@ class Engine(EngineInterface):
     async def _stop(self):
         """關閉引擎"""
 
+    @abc.abstractmethod
+    async def new_page(self) -> PageT:
+        """前往頁面"""
+
     def browser(self):
         """
         異步上下文呼叫介面
@@ -40,7 +44,3 @@ class Engine(EngineInterface):
             ...
         """
         return self
-
-    def page(self):
-        """呼叫頁面"""
-        return self._page
