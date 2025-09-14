@@ -16,16 +16,3 @@ class Playwright(BaseEngine[Browser, Page]):
 
     async def new_page(self):
         return await self._browser.new_page()
-
-    async def test(self):
-        p = await async_playwright().start()
-
-        browser = await p.chromium.launch(headless=True)
-        page = await browser.new_page()
-        await page.goto("https://example.com")
-        print(await page.title())
-
-        await browser.close()
-
-        # 手動停止 Playwright
-        await p.stop()
