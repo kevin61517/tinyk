@@ -35,12 +35,20 @@ class BaseEngine(EngineInterface, Generic[BrowserT, PageT]):
 
     @abc.abstractmethod
     async def new_page(self) -> PageT:
-        """前往頁面"""
+        """開啟新頁面"""
 
-    def browser(self) -> 'BaseEngine[BrowserT, PageT]':
+    def browser(self, name: str) -> 'BaseEngine[BrowserT, PageT]':
         """
         異步上下文呼叫介面
         async with obj.browser() as browser:
             ...
         """
         return self
+
+
+class BaseBrowser:
+    ...
+
+
+class Page:
+    ...
