@@ -1,43 +1,58 @@
 from __future__ import annotations
 import abc
-from typing import TypeVar, Generic
-
-
-# 泛型型別
-BrowserT = TypeVar('BrowserT')  # 瀏覽器
-PageT = TypeVar('PageT')  # 頁面
+from contextlib import AbstractAsyncContextManager
 
 
 class EngineInterface(abc.ABC):
     """爬蟲引擎介面"""
 
     @abc.abstractmethod
+    def use_engine(self, name) -> EngineInterface:
+        """選擇引擎"""
+
+    @abc.abstractmethod
+    async def use_browser(self, name: str) -> BrowserInterface:
+        """
+        功能：取得瀏覽器。
+        說明：在engine被賦值後，根據 name 參數來回傳不同引擎的不同瀏覽器實例。
+        """
+
+
+class BrowserInterface(AbstractAsyncContextManager, abc.ABC):
+    """瀏覽器介面"""
+
+    @abc.abstractmethod
     async def __aenter__(self):
-        """開啟異步上下文"""
+        """開啟上下文"""
 
     @abc.abstractmethod
     async def __aexit__(self, exc_type, exc_value, traceback):
-        """關閉異步上下文"""
-
-
-class BrowserInterface(abc.ABC):
-    """瀏覽器"""
+        """關閉上下文"""
 
     @abc.abstractmethod
     async def launch(self, *args, **kws):
-        """啟動"""
+        """
+        功能：啟動瀏覽器。
+        說明：啟動瀏覽器具體實作。
+        """
 
     @abc.abstractmethod
     async def close(self):
-        """關閉"""
+        """
+        功能：關閉瀏覽器。
+        說明：關閉瀏覽器具體實作。
+        """
 
     @abc.abstractmethod
-    async def new_page(self) -> PageInterface:
-        """開啟頁面"""
+    async def new_page(self, *args, **kws) -> PageInterface:
+        """
+        功能：開啟頁面。
+        說明：根據不同引擎實作不同的開啟頁面方式。
+        """
 
 
 class PageInterface(abc.ABC):
-    """頁面"""
+    """頁面介面"""
 
     @abc.abstractmethod
     async def goto(self, url: str, *args, **kws):
