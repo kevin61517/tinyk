@@ -1,17 +1,32 @@
 from __future__ import annotations
 import abc
+from typing import Generic, TypeVar
 from contextlib import AbstractAsyncContextManager
 
 
-class EngineInterface(abc.ABC):
+EngineT = TypeVar('EngineT')
+
+
+class EngineInterface(abc.ABC, Generic[EngineT]):
     """爬蟲引擎介面"""
+
+    @abc.abstractmethod
+    def __init__(self, *args, **kws):
+        """初始化"""
+
+    @abc.abstractmethod
+    async def init_engine(self, *args, **kws) -> EngineT:
+        """
+        功能：基類設置引擎物件。
+        說明：調用或回傳引擎啟動入口(Selenium, Pyppeteer, Playwright)。
+        """
 
     @abc.abstractmethod
     def use_engine(self, name) -> EngineInterface:
         """選擇引擎"""
 
     @abc.abstractmethod
-    async def use_browser(self, name: str) -> BrowserInterface:
+    async def init_browser(self, name: str) -> BrowserInterface:
         """
         功能：取得瀏覽器。
         說明：在engine被賦值後，根據 name 參數來回傳不同引擎的不同瀏覽器實例。
@@ -30,7 +45,7 @@ class BrowserInterface(AbstractAsyncContextManager, abc.ABC):
         """關閉上下文"""
 
     @abc.abstractmethod
-    async def launch(self, *args, **kws):
+    async def launch(self, *args, **kws) -> BrowserInterface:
         """
         功能：啟動瀏覽器。
         說明：啟動瀏覽器具體實作。
@@ -59,5 +74,5 @@ class PageInterface(abc.ABC):
         """前往"""
 
     @abc.abstractmethod
-    async def title(self):
+    async def title(self, *args, **kws):
         """取得頁面Title"""
