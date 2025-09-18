@@ -1,15 +1,15 @@
 """
 引擎管理：使用engine_factory初始化引擎。
 """
-from typing import Type
 from src.domain.engine import EngineInterface
-from .base import BaseEngine
+from .base import EngineRegister
 from .playwright import Playwright
 
 
-Engine = BaseEngine
+engine_register = EngineRegister()
+engine_register.register(Playwright)
 
 
-async def engine_factory(engine_manager: Type[EngineInterface], name: str, *args, **kws) -> EngineInterface:
-    engine = engine_manager.use_engine(name.lower())
+async def engine_factory(name: str, *args, **kws) -> EngineInterface:
+    engine = engine_register.get(name.lower())
     return await engine(*args, **kws).init_engine()

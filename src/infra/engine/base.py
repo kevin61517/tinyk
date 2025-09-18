@@ -2,6 +2,7 @@ from __future__ import annotations
 import abc
 from typing import Optional, TypeVar, Generic, Dict, Type
 from src.domain.engine import EngineInterface, BrowserInterface, PageInterface, EngineT
+from src.domain.registry import RegisterInterface, RegistrableInterface
 
 
 BrowserT = TypeVar('BrowserT')
@@ -9,31 +10,37 @@ PageT = TypeVar('PageT')
 EngineName = str
 
 
-class BaseEngine(EngineInterface[EngineT], abc.ABC):
+class EngineRegister(RegisterInterface[EngineInterface]):
+    """引擎註冊器"""
 
-    _registry: Dict[EngineName, Type[EngineInterface]] = {}
+    def get(self, name: str):
+        """取得被註冊的物件"""
+        cls = self._registry.get(name.lower())
+        if not cls:
+            raise TypeError(f'Engine "{name}" not implement.')
+        return cls
 
-    def __init_subclass__(cls, name: EngineName = None, **kws):
-        """Subclass Hook"""
-        # 檢查重複實作
-        key, value = (name or cls.__name__).lower(), cls
-        if cls._registry.get(key) is not None:
-            raise TypeError(f'Engine "{key}" implemented already, please change name or change engine implementation.')
-        cls._registry[key] = cls
+    def register(self, cls):
+        """註冊"""
+        name = cls.get_name()
+        if self._registry.get(name.lower()) is not None:
+            raise TypeError(f'Engine "{name}" implemented already, please change name or change engine implementation.')
+        self._registry[name.lower()] = cls
+
+    @property
+    def registries(self):
+        """枚舉註冊物件"""
+        for name, cls in self._registry.items():
+            yield name, cls
+
+
+class BaseEngine(EngineInterface[EngineT], RegistrableInterface, abc.ABC):
 
     def __init__(self, *args, **kws):
         """初始化引擎"""
         self._engine: Optional[EngineT] = None
         self._args = args
         self._kws = kws
-
-    @classmethod
-    def use_engine(cls, key: EngineName) -> Type[EngineInterface]:
-        """選擇引擎"""
-        engine = cls._registry.get(key, None)
-        if engine is None:
-            raise TypeError(f'Engine "{key}" not implement.')
-        return engine
 
     async def init_engine(self) -> EngineInterface[EngineT]:
         """初始化引擎"""

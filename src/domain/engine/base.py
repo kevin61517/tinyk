@@ -14,11 +14,6 @@ class EngineInterface(abc.ABC, Generic[EngineT]):
     def __init__(self, *args, **kws):
         """初始化"""
 
-    @classmethod
-    @abc.abstractmethod
-    def use_engine(cls, name) -> Type[EngineInterface[EngineT]]:
-        """選擇引擎"""
-
     @abc.abstractmethod
     async def init_engine(self, *args, **kws) -> EngineInterface[EngineT]:
         """

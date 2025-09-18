@@ -1,6 +1,6 @@
 import asyncio
 
-from src.infra.engine import engine_factory, Engine
+from src.infra.engine import engine_factory
 
 
 async def main():
@@ -11,15 +11,16 @@ async def main():
     headless = False
 
     # 初始化測試物件
-    engine = await engine_factory(Engine, engine_name)
-    browser = await engine.init_browser(browser_name)
+    engine = await engine_factory(engine_name)
+    print('engine----->', engine)
+    # browser = await engine.init_browser(browser_name)
 
     # 開始測試
-    async with await browser.launch(headless=headless) as b:
-        page = await b.new_page()
-        await page.goto(url)
-        print(await page.title())
-        await asyncio.sleep(3)
+    # async with await browser.launch(headless=headless) as b:
+    #     page = await b.new_page()
+    #     await page.goto(url)
+    #     print(await page.title())
+    #     await asyncio.sleep(3)
 
 
 if __name__ == '__main__':

@@ -18,9 +18,14 @@ class Playwright(BaseEngine[PlaywrightContextManager]):
     async def _init_browser(self, name: str) -> BrowserInterface:
         return Browser(browser=None, name=name, launcher=self._engine)
 
+    @classmethod
+    def get_name(cls) -> str:
+        return cls.__name__
+
 
 class Browser(BaseBrowser[PBrowser]):
     """瀏覽器實作"""
+
     def __init__(self, browser, name: str, launcher: PlaywrightContextManager, *args, **kws):
         self._launcher = launcher
         self._name = name
