@@ -1,6 +1,6 @@
 from __future__ import annotations
 import abc
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Type
 from contextlib import AbstractAsyncContextManager
 
 
@@ -14,21 +14,22 @@ class EngineInterface(abc.ABC, Generic[EngineT]):
     def __init__(self, *args, **kws):
         """初始化"""
 
+    @classmethod
     @abc.abstractmethod
-    async def init_engine(self, *args, **kws) -> EngineT:
+    def use_engine(cls, name) -> Type[EngineInterface[EngineT]]:
+        """選擇引擎"""
+
+    @abc.abstractmethod
+    async def init_engine(self, *args, **kws) -> EngineInterface[EngineT]:
         """
         功能：基類設置引擎物件。
         說明：調用或回傳引擎啟動入口(Selenium, Pyppeteer, Playwright)。
         """
 
     @abc.abstractmethod
-    def use_engine(self, name) -> EngineInterface:
-        """選擇引擎"""
-
-    @abc.abstractmethod
     async def init_browser(self, name: str) -> BrowserInterface:
         """
-        功能：取得瀏覽器。
+        功能：初始化瀏覽器。
         說明：在engine被賦值後，根據 name 參數來回傳不同引擎的不同瀏覽器實例。
         """
 

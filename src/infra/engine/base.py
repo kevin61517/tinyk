@@ -27,6 +27,14 @@ class BaseEngine(EngineInterface[EngineT], abc.ABC):
         self._args = args
         self._kws = kws
 
+    @classmethod
+    def use_engine(cls, key: EngineName) -> Type[EngineInterface]:
+        """選擇引擎"""
+        engine = cls._registry.get(key, None)
+        if engine is None:
+            raise TypeError(f'Engine "{key}" not implement.')
+        return engine
+
     async def init_engine(self) -> EngineInterface[EngineT]:
         """初始化引擎"""
         self._engine = await self._init(*self._args, **self._kws)
@@ -36,13 +44,13 @@ class BaseEngine(EngineInterface[EngineT], abc.ABC):
     async def _init(self, *args, **kws):
         """初始化引擎實作"""
 
-    @classmethod
-    def use_engine(cls, key: EngineName) -> Type[EngineInterface]:
-        """選擇引擎"""
-        engine = cls._registry.get(key, None)
-        if engine is None:
-            raise TypeError(f'Engine "{key}" not implement.')
-        return engine
+    async def init_browser(self, name: str) -> BrowserInterface:
+        """初始化瀏覽器"""
+        return await self._init_browser(name.lower())
+
+    @abc.abstractmethod
+    async def _init_browser(self, name) -> BrowserInterface:
+        """初始化瀏覽器實作"""
 
 
 class BaseBrowser(BrowserInterface, abc.ABC, Generic[BrowserT]):

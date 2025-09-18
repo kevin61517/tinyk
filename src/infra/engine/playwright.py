@@ -15,7 +15,7 @@ class Playwright(BaseEngine[PlaywrightContextManager]):
     async def _init(self, *args, **kws):
         return async_playwright()
 
-    async def init_browser(self, name: str) -> BrowserInterface:
+    async def _init_browser(self, name: str) -> BrowserInterface:
         return Browser(browser=None, name=name, launcher=self._engine)
 
 
