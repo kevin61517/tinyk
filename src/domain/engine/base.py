@@ -1,54 +1,78 @@
 from __future__ import annotations
 import abc
-from typing import Generic, TypeVar, Type
+from typing import Generic, TypeVar
 from contextlib import AbstractAsyncContextManager
 
 
+LauncherT = TypeVar('LauncherT')
 EngineT = TypeVar('EngineT')
+BrowserT = TypeVar('BrowserT')
 
 
-class EngineInterface(abc.ABC, Generic[EngineT]):
+class EngineInterface(abc.ABC, Generic[EngineT, BrowserT]):
     """爬蟲引擎介面"""
 
-    @abc.abstractmethod
-    def __init__(self, *args, **kws):
+    def __init__(self, engine: EngineT):
         """初始化"""
+        self._engine: EngineT = engine
+
+    @classmethod
+    @abc.abstractmethod
+    async def launch(cls, **options) -> EngineInterface[EngineT]:
+        """
+        功能：啟動引擎。
+        說明：根據不同引擎實作啟動。
+        """
 
     @abc.abstractmethod
-    async def init_engine(self, *args, **kws) -> EngineInterface[EngineT]:
+    async def shutdown(self) -> None:
         """
-        功能：基類設置引擎物件。
-        說明：調用或回傳引擎啟動入口(Selenium, Pyppeteer, Playwright)。
+        功能：關閉引擎。
+        說明：根據不同引擎實作關閉。
+        :return:
         """
 
     @abc.abstractmethod
-    async def init_browser(self, name: str) -> BrowserInterface:
+    def get_browser(self, name: str) -> BrowserT:
         """
-        功能：初始化瀏覽器。
-        說明：在engine被賦值後，根據 name 參數來回傳不同引擎的不同瀏覽器實例。
+        功能：取得瀏覽器。
+        說明：根據不同引擎實作取得瀏覽器。
         """
 
 
-class BrowserInterface(AbstractAsyncContextManager, abc.ABC):
+class BrowserInterface(AbstractAsyncContextManager, abc.ABC, Generic[LauncherT, BrowserT]):
     """瀏覽器介面"""
 
-    @abc.abstractmethod
+    def __init__(self, launcher: LauncherT, **options):
+        self._launcher: LauncherT = launcher
+        self._options = options
+        self._browser: BrowserT = None
+
     async def __aenter__(self):
         """開啟上下文"""
+        try:
+            await self._launch()
+            return self
+        except Exception as e:
+            await self._shutdown()
+            raise e
 
-    @abc.abstractmethod
     async def __aexit__(self, exc_type, exc_value, traceback):
         """關閉上下文"""
+        try:
+            await self._shutdown()
+        except Exception as e:
+            raise e
 
     @abc.abstractmethod
-    async def launch(self, *args, **kws) -> BrowserInterface:
+    async def _launch(self) -> BrowserInterface:
         """
         功能：啟動瀏覽器。
         說明：啟動瀏覽器具體實作。
         """
 
     @abc.abstractmethod
-    async def close(self):
+    async def _shutdown(self):
         """
         功能：關閉瀏覽器。
         說明：關閉瀏覽器具體實作。

@@ -1,53 +1,50 @@
-from typing import Callable, Coroutine, Optional
 from playwright.async_api import (
-    async_playwright,
     Browser as PBrowser,
     Page as PPage,
     BrowserType,
     PlaywrightContextManager,
-    Playwright as AsyncPlaywright
+    async_playwright
 )
-from .base import BaseEngine, BaseBrowser, BrowserInterface, BasePage
+from playwright.async_api._generated import Playwright as AsyncPlaywright
+from .base import BaseEngine, BaseBrowser, BasePage
 
 
-class Playwright(BaseEngine[PlaywrightContextManager]):
+_NAME = 'Playwright'
 
-    async def _init(self, *args, **kws):
-        return async_playwright()
 
-    async def _init_browser(self, name: str) -> BrowserInterface:
-        return Browser(browser=None, name=name, launcher=self._engine)
+class Playwright(BaseEngine[AsyncPlaywright, BrowserType]):
 
     @classmethod
     def get_name(cls) -> str:
-        return cls.__name__
+        return _NAME
+
+    @classmethod
+    async def launch(cls, **options):
+        return cls(engine=await async_playwright().start())
+
+    async def shutdown(self) -> None:
+        await self._engine.stop()
+
+    def get_browser(self, name: str):
+        if isinstance(browser := getattr(self._engine, name), BrowserType):
+            return browser
+        raise TypeError(f'{name} is not a Browser.')
 
 
-class Browser(BaseBrowser[PBrowser]):
+class Browser(BaseBrowser[BrowserType, PBrowser]):
     """瀏覽器實作"""
 
-    def __init__(self, browser, name: str, launcher: PlaywrightContextManager, *args, **kws):
-        self._launcher = launcher
-        self._name = name
-        self._engine: Optional[AsyncPlaywright] = None
-        super().__init__(browser, *args, **kws)
+    @classmethod
+    def get_name(cls) -> str:
+        return _NAME
 
-    async def _init_browser(self, *args, **kws):
-        """初始化瀏覽器"""
-        self._engine: AsyncPlaywright = await self._launcher.start()
-        if not hasattr(self._engine, self._name):
-            raise TypeError(f'Engine "{self.__class__.__name__}" has no browser "{self._name}"')
+    async def _launch(self):
+        """啟動瀏覽器"""
+        self._browser = await self._launcher.launch(**self._options)
 
-        browser: BrowserType = getattr(self._engine, self._name)
-        if not isinstance(browser, BrowserType):
-            raise TypeError(f'{self._name} is not a browser.')
-
-        self._browser: PBrowser = await browser.launch(*args, **kws)
-
-    async def _shutdown_browser(self):
+    async def _shutdown(self):
         try:
             await self._browser.close()
-            await self._engine.stop()
         except Exception as e:
             raise e
 
