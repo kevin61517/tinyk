@@ -2,7 +2,6 @@ from playwright.async_api import (
     Browser as PBrowser,
     Page as PPage,
     BrowserType,
-    PlaywrightContextManager,
     async_playwright
 )
 from playwright.async_api._generated import Playwright as AsyncPlaywright

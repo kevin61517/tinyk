@@ -1,6 +1,5 @@
 import asyncio
 from src.service.crawler import Crawler
-from src.infra.engine import engine_register
 
 
 async def main():

@@ -1,8 +1,7 @@
 """
 引擎管理：使用engine_factory初始化引擎。
 """
-from src.domain.engine import EngineInterface
-from .base import EngineRegister, RegisterInterface
+from .base import EngineRegister
 from .playwright import Playwright
 
 

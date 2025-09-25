@@ -1,6 +1,6 @@
 from __future__ import annotations
 import abc
-from typing import TypeVar, Generic, Type, Union, Protocol
+from typing import TypeVar, Generic, Type, Union
 from src.domain.engine import EngineInterface, BrowserInterface, PageInterface, EngineT, LauncherT, BrowserT
 from src.domain.registry import RegisterInterface, RegistrableInterface
 

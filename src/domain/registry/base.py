@@ -1,7 +1,6 @@
 from __future__ import annotations
 import abc
-from typing import Dict, Generic, TypeVar, Type, Generator
-from collections.abc import Iterable
+from typing import Dict, Generic, TypeVar, Generator
 
 
 class RegistrableInterface(abc.ABC):
