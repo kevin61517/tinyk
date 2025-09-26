@@ -11,7 +11,11 @@ from .base import BaseEngine, BaseBrowser, BasePage
 _NAME = 'Playwright'
 
 
-class Playwright(BaseEngine[AsyncPlaywright, BrowserType]):
+class Playwright(BaseEngine[BrowserType]):
+
+    def __init__(self, engine: AsyncPlaywright):
+        """初始化"""
+        self._engine: AsyncPlaywright = engine
 
     @classmethod
     def get_name(cls) -> str:
@@ -21,7 +25,7 @@ class Playwright(BaseEngine[AsyncPlaywright, BrowserType]):
     async def launch(cls, **options):
         return cls(engine=await async_playwright().start())
 
-    async def shutdown(self) -> None:
+    async def shutdown(self, **kws) -> None:
         await self._engine.stop()
 
     def get_browser(self, name: str):

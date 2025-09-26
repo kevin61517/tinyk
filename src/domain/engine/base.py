@@ -5,27 +5,22 @@ from contextlib import AbstractAsyncContextManager
 
 
 LauncherT = TypeVar('LauncherT')
-EngineT = TypeVar('EngineT')
 BrowserT = TypeVar('BrowserT')
 
 
-class EngineInterface(abc.ABC, Generic[EngineT, BrowserT]):
+class EngineInterface(abc.ABC, Generic[BrowserT]):
     """爬蟲引擎介面"""
-
-    def __init__(self, engine: EngineT):
-        """初始化"""
-        self._engine: EngineT = engine
 
     @classmethod
     @abc.abstractmethod
-    async def launch(cls, **options) -> EngineInterface[EngineT]:
+    async def launch(cls, **options) -> EngineInterface:
         """
         功能：啟動引擎。
         說明：根據不同引擎實作啟動。
         """
 
     @abc.abstractmethod
-    async def shutdown(self) -> None:
+    async def shutdown(self, **kws) -> None:
         """
         功能：關閉引擎。
         說明：根據不同引擎實作關閉。

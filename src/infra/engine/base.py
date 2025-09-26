@@ -1,7 +1,7 @@
 from __future__ import annotations
 import abc
 from typing import TypeVar, Generic, Type, Union
-from src.domain.engine import EngineInterface, BrowserInterface, PageInterface, EngineT, LauncherT, BrowserT
+from src.domain.engine import EngineInterface, BrowserInterface, PageInterface, LauncherT, BrowserT
 from src.domain.registry import RegisterInterface, RegistrableInterface
 
 
@@ -38,7 +38,7 @@ class EngineRegister(RegisterInterface[Type[EngineInterface]]):
             yield name, cls
 
 
-class BaseEngine(EngineInterface[EngineT, BrowserT], RegistrableInterface, abc.ABC):
+class BaseEngine(EngineInterface[BrowserT], RegistrableInterface, abc.ABC):
     """引擎基類"""
 
 
