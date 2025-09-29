@@ -1,5 +1,5 @@
 import asyncio
-from src.service.crawler import Crawler
+from src.crawler_maker import crawler_maker
 
 
 async def main():
@@ -10,7 +10,7 @@ async def main():
     headless = False
 
     # 初始化測試物件
-    crawler = Crawler(engine_name)
+    crawler = crawler_maker(engine_name)
     await crawler.launch()  # 啟動引擎
     print(crawler.engine)
     await crawler.engine.shutdown()  # 關閉引擎

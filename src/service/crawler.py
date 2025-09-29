@@ -1,16 +1,13 @@
-from typing import Optional
+from typing import Type
 from src.domain.engine import EngineInterface
-from src.infra.engine import engine_register
 
 
 class Crawler:
-    def __init__(self, engine_name: str, **options):
-        self._engine_name: str = engine_name
-        self._engine: Optional[EngineInterface] = None
+    def __init__(self, engine: Type[EngineInterface]):
+        self._engine = engine
 
     async def launch(self, **options):
-        _Engine = engine_register.get(self._engine_name)
-        self._engine = await _Engine.launch(**options)
+        self._engine = await self._engine.launch(**options)
         return self
 
     @property
