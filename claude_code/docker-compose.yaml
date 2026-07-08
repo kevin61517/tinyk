@@ -1,0 +1,23 @@
+services:
+  claude:
+    build: .
+    # 使用變數定義容器名稱
+    container_name: ${CONTAINER_NAME}-ai-agent
+    volumes:
+      - ${PROJECT_PATH}:/workspace  # 將主機專案路徑掛載至容器內的 /workspace
+      - /var/run/docker.sock:/var/run/docker.sock  # 掛載 Docker Socket 讓 AI 具備「跨容器執行」能力
+      - ./rules:/root/.claude/rules  # 將 AI 基礎設定放入中樞
+      - ./skills:/root/.claude/skills  # skill 設定
+      - ./commands:/root/.claude/commands  # command 設定
+#      - .:/root/.claude  # 掛載路徑
+    # 必須開啟互動模式
+    command: tail -f /dev/null
+    tty: true
+    stdin_open: true
+    networks:
+      - project_net
+
+networks:
+  project_net:
+    external: true
+    name: ${PROJECT_NETWORK}

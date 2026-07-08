@@ -1,0 +1,23 @@
+tap "homebrew/services"
+# Provides library functionality for FIDO U2F & FIDO 2.0, including USB
+brew "libfido2"
+# Open source relational database management system
+brew "mysql"
+# Open source relational database management system
+brew "mysql-client"
+# Simple CLI for interacting with Google oauth tokens
+brew "oauth2l"
+# General-purpose scripting language
+brew "php@8.2"
+# Protocol buffers (Google's data interchange format)
+brew "protobuf"
+# Python version management
+brew "pyenv"
+# OCR (Optical Character Recognition) engine
+brew "tesseract"
+# UNIX shell (command interpreter)
+brew "zsh"
+# Free and open-source web browser
+cask "chromium"
+# Reverse proxy, secure introspectable tunnels to localhost
+cask "ngrok"
